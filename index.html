@@ -3,6 +3,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nepal Gold & Silver Tracker</title>
 <style>
+.about{margin-top:14px}
+.about h2{font-size:18px;margin:0 0 6px}
+.about h3{font-size:14px;margin:14px 0 4px}
+.about p{margin:4px 0;font-size:14px}
+.about .terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px}
+.about .term{border:1px solid var(--bd);border-top:3px solid var(--acc);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.about .term b{display:block;margin-bottom:2px}
+.about .warn{margin-top:14px;padding:10px 12px;border-left:4px solid var(--dn);background:color-mix(in srgb,var(--dn) 8%,transparent);border-radius:6px;font-size:13.5px}
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#faf8f3;--card:#fff;--tx:#1f1c14;--mut:#7a7466;--bd:#e6e1d4;--up:#1e8e5a;--dn:#d23f3f;--grid:#efeadc;--acc:#c99a14;--e1:#3b82f6;--e2:#f97316}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#14130f;--card:#1e1c16;--tx:#f1ede0;--mut:#9a9482;--bd:#34311f;--grid:#2a2719;--up:#3cc17f;--dn:#f06565}}
@@ -37,6 +45,18 @@ ul{margin:6px 0;padding-left:0;list-style:none;font-size:13.5px}li{margin:3px 0}
 .chips em{display:block;font-style:normal;color:var(--mut);font-size:11px}
 .note{font-size:12px;color:var(--mut);margin-top:14px}
 @media(max-width:560px){.tiles,.two{grid-template-columns:1fr}.tile b{font-size:20px}}
+.calc{margin-top:14px}
+.calc h2{font-size:18px;margin:0 0 4px}
+.ctabs{display:inline-flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin:8px 0}
+.ctabs button{background:var(--card);color:var(--mut);border:0;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}
+.ctabs button.on{background:var(--acc);color:#fff}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.calc label{display:block;font-size:12.5px;color:var(--mut)}
+.calc input,.calc select{display:block;width:100%;margin-top:3px;padding:9px 10px;font:inherit;font-size:16px;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px}
+.calc input:focus,.calc select:focus{outline:2px solid var(--acc);outline-offset:1px}
+.calc [hidden]{display:none}
+.cout{margin-top:12px;padding:12px 14px;border:1px solid var(--bd);border-left:4px solid var(--acc);border-radius:8px;min-height:60px}
+.cout .sub{margin-top:3px}
 </style></head><body><main>
 <h1>Nepal Gold &amp; Silver Tracker</h1>
 <div class="sub">NPR · Hallmark (24K) gold &amp; silver · FENEGOSIDA daily rates · <span id="upd">loading…</span></div>
@@ -56,6 +76,35 @@ ul{margin:6px 0;padding-left:0;list-style:none;font-size:13.5px}li{margin:3px 0}
 <div class="ch"><canvas id="c3"></canvas></div>
 </div>
 <div class="two"><div class="card" id="sig"></div><div class="card" id="prd"></div></div>
+<section class="card calc" id="calc">
+<h2>Gold &amp; Silver Calculator</h2>
+<div class="sub">Uses the latest rate from this tracker.</div>
+<div class="ctabs"><button type="button" class="ctab on" data-mode="0">Weight → Value</button><button type="button" class="ctab" data-mode="1">Budget → Weight</button></div>
+<div class="cgrid">
+<label>Metal<select id="cx-metal"><option value="0">Gold (24K)</option><option value="1">Silver</option></select></label>
+<label id="cx-wl">Weight<input id="cx-w" type="text" inputmode="decimal" placeholder="e.g. 2.5" autocomplete="off"></label>
+<label id="cx-ul">Unit<select id="cx-u"><option value="tola">Tola</option><option value="gram">Gram</option><option value="g10">10 Gram</option></select></label>
+<label id="cx-bl" hidden>Budget (Rs)<input id="cx-b" type="text" inputmode="decimal" placeholder="e.g. 100000" autocomplete="off"></label>
+<label>Making charge % (optional)<input id="cx-mk" type="text" inputmode="decimal" placeholder="0" autocomplete="off"></label>
+</div>
+<div class="cout" id="cx-out" aria-live="polite"></div>
+<p class="sub" style="margin-top:8px">This is an estimate of metal value only. Shop prices also include making charges, wastage, taxes and the dealer’s margin, so check with your jeweller.</p>
+</section>
+<section class="card about" id="about">
+<h2>About This Tracker</h2>
+<p>This tracker helps people in Nepal follow gold and silver prices in NPR, per tola and per 10 gram, and see how prices have moved over time.</p>
+<h3>Where the prices come from</h3>
+<p>Rates are the daily hallmark (24K) gold and silver prices set by FENEGOSIDA, the Federation of Nepal Gold and Silver Dealers’ Association. An automatic job collects them each business day. There is no new rate on Saturdays and public holidays. The 10 gram price is worked out from the tola price (1 tola = 11.6638 g).</p>
+<h3>How the charts work</h3>
+<p>Each bar is one day. In candle view, green means the price rose that day and red means it fell. Line view joins the daily prices. Only one rate is published per day, so the thin lines on the candles are estimates. The shaded area, if you see it, is simulated data used only to warm up the indicators.</p>
+<h3>The indicators in simple words</h3>
+<div class="terms">
+<div class="term"><b>EMA</b>A smoothed average of recent prices that gives newer days more weight. When the fast line (9 days) crosses above the slow line (21 days), prices may be turning up.</div>
+<div class="term"><b>RSI</b>A score from 0 to 100 showing how strongly the price has been rising or falling. Above 70 can mean overheated, and below 30 can mean oversold.</div>
+<div class="term"><b>MACD</b>Compares a fast and a slow average to show momentum. Bars above the middle line mean upward momentum, and bars below mean downward.</div>
+</div>
+<div class="warn"><b>Disclaimer.</b> Indicators, signals and forecasts here are informational estimates based on past prices. They are not financial advice and can be wrong. Check current rates with a trusted dealer before buying or selling.</div>
+</section>
 <p class="note"><b>Data notes.</b> Rates are FENEGOSIDA figures collected by an automated daily job into prices.json; days marked interpolated were filled in between published rates. FENEGOSIDA publishes one rate per day, so each candle opens at the previous rate and closes at that day’s rate; wick lengths are estimated. The shaded 75 days before the first real rate are modeled, not real prices, and exist only to warm up EMA/MACD. 10 g = tola × 10 ÷ 11.6638. Rates refresh automatically each Nepali business day. Signals and the forecast are simple statistical rules, not financial advice.</p>
 </main>
 <script>
@@ -144,5 +193,38 @@ document.querySelectorAll("input[data-k]").forEach(c=>c.addEventListener("change
 $("#tiles").addEventListener("click",e=>{const t=e.target.closest(".tile");if(t){S.m=+t.dataset.m;render()}});
 ["c1","c2","c3"].forEach(id=>{const c=$("#"+id);c.addEventListener("pointermove",e=>{if(!A)return;const r=c.getBoundingClientRect(),i=Math.floor((e.clientX-r.left-G.pl)/G.step)+G.s0;H_=i>=G.s0&&i<A.c.length?i:null;draw()});c.addEventListener("pointerleave",()=>{H_=null;draw()})});
 addEventListener("resize",()=>A&&draw());matchMedia("(prefers-color-scheme:dark)").addEventListener("change",()=>A&&draw());
-fetch("prices.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{D=j.rates;raw=[build(0),build(1)];$("#upd").textContent="last rate "+dt(D[D.length-1][0]).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric",timeZone:"UTC"});render()}).catch(()=>{$("#tiles").textContent="Could not load prices.json. Serve this folder over http(s), not file://."});
-</script></body></html>
+fetch("prices.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{D=j.rates;raw=[build(0),build(1)];$("#upd").textContent="last rate "+dt(D[D.length-1][0]).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric",timeZone:"UTC"});render();typeof calcInit=="function"&&calcInit()}).catch(()=>{$("#tiles").textContent="Could not load prices.json. Serve this folder over http(s), not file://."});
+</script>
+<script>
+(function(){
+ const g=id=>document.getElementById(id),M={m:0};
+ const num=id=>{const v=parseFloat(String(g(id).value).replace(/,/g,""));return isFinite(v)&&v>0?v:null};
+ const latest=m=>{if(typeof raw==="undefined"||!raw)return null;const r=raw[m];return r[r.length-1]};
+ const toTola=(w,u)=>u==="gram"?w/TOLA:u==="g10"?w*10/TOLA:w;
+ const out=h=>{g("cx-out").innerHTML=h};
+ function update(){
+  const m=+g("cx-metal").value,p=latest(m);
+  if(!p){out('<span class="sub">Loading prices…</span>');return}
+  const mk=parseFloat(g("cx-mk").value),pct=isFinite(mk)&&mk>0?mk:0,
+   date=dt(p.d).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}),
+   info='<div class="sub">'+NAMES[m]+" price used: "+fmt(p.c)+" per tola ("+fmt(p.c*10/TOLA)+" per 10 g) · rate of "+date+"</div>";
+  let h;
+  if(M.m===0){
+   const w=num("cx-w");if(w===null){out('<span class="sub">Enter a weight to see the value.</span>'+info);return}
+   const t=toTola(w,g("cx-u").value),v=t*p.c,fee=v*pct/100;
+   h='<div class="sub">Metal value</div><div class="big">'+fmt(v)+"</div>"+(pct?'<div class="sub">Making charge ('+pct+"%): "+fmt(fee)+'</div><div class="sub">Total with making charge: <b>'+fmt(v+fee)+"</b></div>":"")+'<div class="sub">= '+t.toFixed(2)+" tola · "+(t*TOLA).toFixed(2)+" g</div>";
+  }else{
+   const b=num("cx-b");if(b===null){out('<span class="sub">Enter a budget in rupees to see how much you can buy.</span>'+info);return}
+   const t=b/(1+pct/100)/p.c;
+   h='<div class="sub">You can buy about'+(pct?" (after a "+pct+"% making charge)":"")+'</div><div class="big">'+t.toFixed(2)+' tola</div><div class="sub">= '+(t*TOLA).toFixed(2)+" g · "+(t*TOLA/10).toFixed(2)+" × 10 g</div>";
+  }
+  out(h+info)}
+ document.querySelectorAll("#calc .ctab").forEach(b=>b.addEventListener("click",()=>{
+  M.m=+b.dataset.mode;document.querySelectorAll("#calc .ctab").forEach(z=>z.classList.toggle("on",z===b));
+  g("cx-wl").hidden=g("cx-ul").hidden=M.m===1;g("cx-bl").hidden=M.m===0;update()}));
+ ["cx-metal","cx-u"].forEach(id=>g(id).addEventListener("change",update));
+ ["cx-w","cx-b","cx-mk"].forEach(id=>g(id).addEventListener("input",update));
+ window.calcInit=update;update();
+})();
+</script>
+</body></html>
